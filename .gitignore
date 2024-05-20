@@ -1,12 +1,12 @@
 ##  Aplicação com os microdados da pnad continua para o desenvolvimento do trabalho da disciplina "Introdução ao Python para ciência de dados"
 #Comportamento da jornada e do rendimento do trabalho após os dois primeiros picos da pandemia do coronovírus no Brasil
 
-Fonte dos Dados:
-Base: Microdados da Pesquisa Nacional por Amostra de Domicílios Contínua Anual (PNADC)
-Fonte: Instituto Brasileiro de Geografia e Estatística (IBGE)
-Ano: 2022
+##Fonte dos Dados:
+##Base: Microdados da Pesquisa Nacional por Amostra de Domicílios Contínua Anual (PNADC)
+##Fonte: Instituto Brasileiro de Geografia e Estatística (IBGE)
+##Ano: 2022
 
-Carregamento da Base de Dados
+##Carregamento da Base de Dados
 #Conectando o arquivo colab com o google drive:
 import google
 google.colab.drive.mount('/content/drive/')
@@ -17,6 +17,7 @@ import numpy as np
 
 path = '/content/drive/MyDrive/Doutorado/ECN932A - Introdução ao Python para ciência de dados/Trabalho final/PNADC_2022_visita1.txt'
 pd.read_fwf(path)
+
 #A posição de cada variável no registro deve ser declarada para carregá-las. Definindo o tamanho de cada coluna segundo o dicionário das variáveis da PNAD Contínua:
 width = [4, 1, 2, 2, 2, 9, 7, 2, 2, 1, 1, 9, 15, 15,...]
 pnad = pd.read_fwf('/content/drive/MyDrive/Doutorado/ECN932A - Introdução ao Python para ciência de dados/Trabalho final/PNADC_2022_visita1.txt', widths=width, header=None)
@@ -124,7 +125,7 @@ idade                      0
 sexo                       0
 dtype: int64
 
-Primeiramente, aplica-se alguns filtros em um novo dataframe. Para essa análise, 
+##Primeiramente, aplica-se alguns filtros em um novo dataframe. Para essa análise, 
 o interesse está apenas para os indivíduos ocupados entre 14 e 59 anos residentes no espaço de domicílio urbano.
 
 pnad22 = pnad2.query("condicao_ocup == 1 & situacao_domicilio == 1 & idade >= 14 & idade < 60").copy()
@@ -155,12 +156,12 @@ jornada                  0
 condicao_ocup            0
 dtype: int64
 
-Observa-se que com apenas alguns filtros o problema dos dados missing sanou, exceto para a variável de rendimentos do trabalho, porque:
+##Observa-se que com apenas alguns filtros o problema dos dados missing sanou, exceto para a variável de rendimentos do trabalho, porque:
 
-como a análise ocorre para o mercado de trabalho, antes de realizar o filtro, estava considerando individuos fora do mercado de trabalho, os desocupados (condicao_ocup = 0) e, consequentemente;
+#como a análise ocorre para o mercado de trabalho, antes de realizar o filtro, estava considerando individuos fora do mercado de trabalho, os desocupados (condicao_ocup = 0) e, consequentemente;
 dados ausentes para posição na ocupação, jornada e rendimentos do trabalho.
 ## Missing: rendimento do trabalho
-Observa-se que os dados missing na variável de rendimentos ***caiu de 217.449 para 1.317***.
+#Observa-se que os dados missing na variável de rendimentos ***caiu de 217.449 para 1.317***.
 pnad22.isnull().sum()
 
 ano                      0
