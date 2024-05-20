@@ -1,160 +1,324 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
+##  Aplicação com os microdados da pnad continua para o desenvolvimento do trabalho da disciplina "Introdução ao Python para ciência de dados"
+#Comportamento da jornada e do rendimento do trabalho após os dois primeiros picos da pandemia do coronovírus no Brasil
 
-# C extensions
-*.so
+Fonte dos Dados:
+Base: Microdados da Pesquisa Nacional por Amostra de Domicílios Contínua Anual (PNADC)
+Fonte: Instituto Brasileiro de Geografia e Estatística (IBGE)
+Ano: 2022
 
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+Carregamento da Base de Dados
+#Conectando o arquivo colab com o google drive:
+import google
+google.colab.drive.mount('/content/drive/')
 
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
+# Adicionando biblioteca para manipulação e análise dos dados:
+import pandas as pd
+import numpy as np
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+path = '/content/drive/MyDrive/Doutorado/ECN932A - Introdução ao Python para ciência de dados/Trabalho final/PNADC_2022_visita1.txt'
+pd.read_fwf(path)
+#A posição de cada variável no registro deve ser declarada para carregá-las. Definindo o tamanho de cada coluna segundo o dicionário das variáveis da PNAD Contínua:
+width = [4, 1, 2, 2, 2, 9, 7, 2, 2, 1, 1, 9, 15, 15,...]
+pnad = pd.read_fwf('/content/drive/MyDrive/Doutorado/ECN932A - Introdução ao Python para ciência de dados/Trabalho final/PNADC_2022_visita1.txt', widths=width, header=None)
+pnad
 
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
-cover/
+#Nomeando cada variável para melhor identificação:
+pnad.columns = ['ano', 'trimestre', 'uf', 'capital', 'RM_RIDE', 'upa', 'estrato', 'V1008', 'V1014',
+                'situacao_domicilio', 'V1023', 'V1030', 'V1031', 'V1032', 'V1032', 'postest', 'posest_sxi',
+                'V2001', 'V2003', 'V2005', 'sexo', 'V2008', 'V20081', 'V20082', 'idade', 'raca', 'V3001', 'V3002',
+                'V3002A', 'V3003A', 'V3005A', 'V3006', 'V3006A', 'V3007', 'V3008', 'V3009A', 'V3010', 'V3011A',
+                'V3012', 'V3013', 'V3013A', 'V3013B', 'V3014', 'V4001', 'V4002', 'V4003', 'V4004', 'V4005', 'V4006A',
+                'V4008', 'V40081', 'V40082', 'V40083', 'V4009', 'V4010', 'V4012', 'V40121', 'V4013', 'V40132A', 'V4014',
+                'V4015', 'V40151', 'V401511', 'V401512', 'V4016', 'V40161', 'V40162', 'V40163', 'V4017','V40171',
+                'V401711', 'V4018', 'V40181', 'V40182', 'V40183', 'V4019', 'V4020', 'V1032', 'V4022', 'V4024', 'V4025',
+                'V4026', 'V4027', 'V4028', 'V4029', 'V4030', 'V4031', 'V4032', 'V4033', 'V40331', 'V403311', 'V403312',
+                'V40332', 'V403321', 'V403322', 'V40333', 'V403331', 'V4034', 'V40341', 'V403411', 'V403412', 'V40342',
+                'V403421', 'V403422', 'V1032', 'V1032', 'jornada', 'V4039C', 'V4040', 'V40401', 'V40402', 'V40403',
+                'V4041', 'V4043', 'V40431', 'V4044', 'V4045', 'V4046', 'V4047', 'V4048', 'V4049', 'V4050', 'V40501',
+                'V405011', 'V405012', 'V40502', 'V405021', 'V405022', 'V40503', 'V405031', 'V4051', 'V40511', 'V405111',
+                'V405112', 'V40512', 'V405121', 'V405122', 'V1032', 'V1032', 'V4056', 'V4056C', 'V4057', 'V4058',
+                'V40581', 'V405811', 'V405812', 'V40582', 'V405821', 'V405822', 'V40583', 'V405831', 'V40584', 'V4059',
+                'V40591', 'V405911', 'V405912', 'V40592', 'V405921', 'V405922', 'V4062', 'V4062C', 'V4063A', 'V4064A',
+                'V4071', 'V4072A', 'V4073', 'V4074A', 'V1032', 'V1032', 'V4076', 'V40761', 'V40762', 'V40763', 'V4077',
+                'V4078A', 'V4082', 'V4097', 'V5001A', 'V5001A2', 'V5002A', 'V5002A2', 'V5003A', 'V5003A2', 'V5004A',
+                'V5004A2', 'V5005A', 'V5005A2', 'V1032', 'V5006A2', 'V5007A', 'V5007A2', 'V5008A', 'V5008A2', 'S01001',
+                'V01002', 'S01003', 'S01004', 'S01005', 'S01006', 'S01007', 'S01007A', 'S01008', 'S01009', 'S01010',
+                'S01011', 'S01011B', 'S01011C', 'S01012A', 'S01013', 'S01014', 'S010141', 'S010142', 'S01015', 'S01016A',
+                'S01016A1', 'S01016A2', 'S01016A3', 'V103', 'V1032', 'S01016B', 'S01017', 'S01018', 'S01019', 'S01020',
+                'S01020A', 'S01021', 'S01022', 'S01023', 'V1032', 'S01025', 'S01026', 'S01028', 'S01029', 'S01031',
+                'S010311', 'S010312', 'Vd2002', 'Vd2003', 'Vd2004', 'V1032', 'VD3004', 'VD3005', 'VD3006', 'V1032',
+                'condicao_ocup', 'Vd4003', 'V1032', 'Vd4005', 'posicao_ocup', 'Vd4008', 'Vd4009', 'Vd4010', 'Vd4011', 'Vd4012',
+                'Vd4013', 'Vd4014', 'Vd4015', 'rendtrabprincipal', 'Vd4017', 'Vd4018', 'Vd4019', 'Vd4020', 'Vd4022',
+                 'Vd4030', 'Vd4031','Vd4035', 'Vd4036', 'Vd4037', 'Vd4046', 'VD4047', 'Vd4048', 'Vd4052',
+                'Vd5001', 'Vd5002', 'Vd5003', 'Vd5004', 'Vd5005', 'Vd5006', 'Vd5007', 'Vd5008', 'Vd5009', 'Vd5010',
+                'Vd5011', 'Vd5012', 'V1032001', 'V1032002', 'V1032003', 'V1032004', 'V1032005', 'V1032006', 'V1032007',
+                'V1032008', 'V1032009', 'V1032010', 'V1032011', 'V1032012', 'V1032013', 'V1032014', 'V1032015',
+                'V1032016', 'V1032017', 'V1032018', 'V1032019', 'V1032020', 'V1032021', 'V1032022', 'V1032023',
+                'V1032024', 'V1032025', 'V1032026', 'V1032027', 'V1032028', 'V1032029', 'V1032030', 'V1032031',
+                'V1032032', 'V1032033', 'V1032034', 'V1032035', 'V1032036','V1032037', 'V1032038', 'V1032039',
+                'V1032040', 'V1032041', 'V1032042', 'V1032043', 'V1032044', 'V1032045', 'V1032046', 'V1032047',
+                'V1032048', 'V1032049', 'V1032050', 'V1032051', 'V1032052', 'V1032053', 'V1032054', 'V1032055',
+                'V1032056', 'V1032057', 'V1032058', 'V1032059', 'V1032060', 'V1032061', 'V1032062', 'V1032063',
+                'V1032064', 'V1032065', 'V1032066', 'V1032067', 'V1032068', 'V1032069', 'V1032070', 'V1032071', 'V1032072',
+                'V1032073', 'V1032074', 'V1032075', 'V1032076', 'V1032077', 'V1032078', 'V1032079', 'V1032080', 'V1032081',
+                'V1032082', 'V1032083', 'V1032084', 'V1032085', 'V1032086', 'V1032087', 'V1032088', 'V1032089',
+                'V1032090', 'V1032091', 'V1032092', 'V1032093', 'V1032094', 'V1032095', 'V1032096', 'V1032097',
+                'V1032098', 'V1032099', 'V1032100', 'V1032101', 'V1032102', 'V1032103', 'V1032104', 'V1032105',
+                'V1032106', 'V1032107', 'V1032108', 'V1032109', 'V1032110', 'V1032111', 'V1032112', 'V1032113',
+                'V1032114', 'V1032115', 'V1032116', 'V1032117', 'V1032118' , 'V1032119', 'V1032120', 'V1032121',
+                'V1032122', 'V1032123', 'V1032124', 'V1032125', 'V1032126', 'V1032127', 'V1032128', 'V1032129',
+                'V1032130', 'V1032131', 'V1032132', 'V1032133', 'V1032134' , 'V1032135', 'V1032136', 'V1032137',
+                'V1032138', 'V1032139', 'V1032140', 'V1032141', 'V1032142', 'V1032143', 'V1032144', 'V1032145',
+                'V1032146', 'V1032147', 'V1032148', 'V1032149', 'V1032150', 'V1032151', 'V1032152', 'V1032153',
+                'V1032154', 'V1032155', 'V1032156', 'V1032157',  'V1032158', 'V1032159', 'V1032160', 'V1032161',
+                'V1032162', 'V1032163', 'V1032164', 'V1032165', 'V1032166', 'V1032167', 'V1032168', 'V1032169',
+                'V1032170', 'V1032171', 'V1032172', 'V1032173', 'V1032174', 'V1032175', 'V1032176', 'V1032177',
+                'V1032178', 'V1032179', 'V1032180', 'V1032181', 'V1032182', 'V1032183', 'V1032184', 'V1032185',
+                'V1032186', 'V1032187', 'V1032188', 'V1032189', 'V1032190', 'V1032191', 'V1032192', 'V1032193',
+                 'V1032194', 'V1032195', 'V1032196', 'V1032197', 'V1032198', 'V1032199', 'V1032200']
 
-# Translations
-*.mo
-*.pot
+pnad
 
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
+**texto em negrito**# Limpeza e Transformação de dados
+# Selecionando variáveis de interesse:
 
-# Flask stuff:
-instance/
-.webassets-cache
+pnad[['ano', 'trimestre', 'uf', 'situacao_domicilio', 'idade', 'sexo', 'raca', 'jornada', 'rendtrabprincipal', 'condicao_ocup', 'posicao_ocup' ]]
+## Salvando um novo dataframe apenas com as variáveis de interesse:
+pnad2 = pnad[['ano', 'trimestre', 'uf', 'situacao_domicilio', 'idade','sexo', 'raca', 'jornada', 'rendtrabprincipal', 'condicao_ocup', 'posicao_ocup' ]].copy()
 
-# Scrapy stuff:
-.scrapy
+pnad2
+#Identificando o tipo das variáveis:
+pnad2.info()
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 376821 entries, 0 to 376820
+Data columns (total 11 columns):
+ #   Column              Non-Null Count   Dtype  
+---  ------              --------------   -----  
+ 0   ano                 376821 non-null  int64  
+ 1   trimestre           376821 non-null  int64  
+ 2   uf                  376821 non-null  int64  
+ 3   situacao_domicilio  376821 non-null  int64  
+ 4   idade               376821 non-null  int64  
+ 5   sexo                376821 non-null  int64  
+ 6   raca                376821 non-null  int64  
+ 7   jornada             163987 non-null  float64
+ 8   rendtrabprincipal   159372 non-null  float64
+ 9   condicao_ocup       178550 non-null  float64
+ 10  posicao_ocup        163987 non-null  float64
+dtypes: float64(4), int64(7)
+memory usage: 31.6 MB
 
-# Sphinx documentation
-docs/_build/
+## Tratamento de dados *missing*
+## Aqui, observa-se que algumas das variáveis selecionadas apresentam muitos valores ausentes (missing). Como tratá-los?
 
-# PyBuilder
-.pybuilder/
-target/
+pnad2.isnull().sum().sort_values(ascending=False)[:10]
+rendtrabprincipal     217449
+jornada               212834
+posicao_ocup          212834
+condicao_ocup         198271
+ano                        0
+trimestre                  0
+uf                         0
+situacao_domicilio         0
+idade                      0
+sexo                       0
+dtype: int64
 
-# Jupyter Notebook
-.ipynb_checkpoints
+Primeiramente, aplica-se alguns filtros em um novo dataframe. Para essa análise, 
+o interesse está apenas para os indivíduos ocupados entre 14 e 59 anos residentes no espaço de domicílio urbano.
 
-# IPython
-profile_default/
-ipython_config.py
+pnad22 = pnad2.query("condicao_ocup == 1 & situacao_domicilio == 1 & idade >= 14 & idade < 60").copy()
+# Renomeando e mudando o tipo da variável para string:
+pnad22['sexo'] = pnad22['sexo'].replace({1:'Homem', 2:'Mulher'} )
+pnad22['sexo'] = pnad22['sexo'].astype(str)
 
-# pyenv
-#   For a library or package, you might want to ignore these files since the code is
-#   intended to run in multiple environments; otherwise, check them in:
-# .python-version
+pnad22['raca'] = pnad22['raca'].replace({1:'branca', 2:'preta', 3:'amarela', 4:'parda', 5:'indigena', 9:'ignorado'} )
+pnad22['raca'] = pnad22['raca'].astype(str)
 
-# pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
-#   However, in case of collaboration, if having platform-specific dependencies or dependencies
-#   having no cross-platform support, pipenv may install dependencies that don't work, or not
-#   install all needed dependencies.
-#Pipfile.lock
+pnad22['posicao_ocup'] = pnad22['posicao_ocup'].replace({1:'empregado', 2:'empregador', 3:'conta propria', 4:'trabalhador familiar auxiliar'} )
+pnad22['posicao_ocup'] = pnad22['posicao_ocup'].astype(str)
 
-# poetry
-#   Similar to Pipfile.lock, it is generally recommended to include poetry.lock in version control.
-#   This is especially recommended for binary packages to ensure reproducibility, and is more
-#   commonly ignored for libraries.
-#   https://python-poetry.org/docs/basic-usage/#commit-your-poetrylock-file-to-version-control
-#poetry.lock
+#Alterando o tipo da variável para o formato númerico.
+pnad22['jornada'] = pnad22['jornada'].astype(int)
 
-# pdm
-#   Similar to Pipfile.lock, it is generally recommended to include pdm.lock in version control.
-#pdm.lock
-#   pdm stores project-wide configurations in .pdm.toml, but it is recommended to not include it
-#   in version control.
-#   https://pdm.fming.dev/#use-with-ide
-.pdm.toml
+#Verificando novamente a existência dos dados missing
+pnad22.isnull().sum().sort_values(ascending=False)[:10]
+rendtrabprincipal     1317
+ano                      0
+trimestre                0
+uf                       0
+situacao_domicilio       0
+idade                    0
+sexo                     0
+raca                     0
+jornada                  0
+condicao_ocup            0
+dtype: int64
 
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow and github.com/pdm-project/pdm
-__pypackages__/
+Observa-se que com apenas alguns filtros o problema dos dados missing sanou, exceto para a variável de rendimentos do trabalho, porque:
 
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
+como a análise ocorre para o mercado de trabalho, antes de realizar o filtro, estava considerando individuos fora do mercado de trabalho, os desocupados (condicao_ocup = 0) e, consequentemente;
+dados ausentes para posição na ocupação, jornada e rendimentos do trabalho.
+## Missing: rendimento do trabalho
+Observa-se que os dados missing na variável de rendimentos ***caiu de 217.449 para 1.317***.
+pnad22.isnull().sum()
 
-# SageMath parsed files
-*.sage.py
+ano                      0
+trimestre                0
+uf                       0
+situacao_domicilio       0
+idade                    0
+sexo                     0
+raca                     0
+jornada                  0
+rendtrabprincipal     1317
+condicao_ocup            0
+posicao_ocup             0
+dtype: int64
 
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
+# Agora, representa apenas 1,14% da proporção de dados ausentes sobre a variável de rendimento do trabalho.
+(pnad22.isnull().sum() / pnad22.shape[0])*100
 
-# Spyder project settings
-.spyderproject
-.spyproject
+ano                   0.000000
+trimestre             0.000000
+uf                    0.000000
+situacao_domicilio    0.000000
+idade                 0.000000
+sexo                  0.000000
+raca                  0.000000
+jornada               0.000000
+rendtrabprincipal     1.145765
+condicao_ocup         0.000000
+posicao_ocup          0.000000
+dtype: float64
 
-# Rope project settings
-.ropeproject
+pnad22['posicao_ocup'].value_counts()
 
-# mkdocs documentation
-/site
+pnad22.pivot_table(index = ['posicao_ocup'],
+                values = 'rendtrabprincipal',
+                aggfunc = 'mean'
+                )
 
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
+rendtrabprincipal
+posicao_ocup	
+conta propria	2127.122682
+empregado	2515.237160
+empregador	6218.115229
+##Na variável de posição na ocupação, a categoria "trabalhador familiar auxiliar" não aufere rendimento do trabalho,
+o que ocasiona dados missing. Optas-se por excluir os valores ausentes dessa variável.
 
-# Pyre type checker
-.pyre/
+pnad22.dropna(subset=['rendtrabprincipal'], inplace=True)
+pnad22.isnull().sum()
 
-# pytype static type analyzer
-.pytype/
+ano                   0
+trimestre             0
+uf                    0
+situacao_domicilio    0
+idade                 0
+sexo                  0
+raca                  0
+jornada               0
+rendtrabprincipal     0
+condicao_ocup         0
+posicao_ocup          0
+dtype: int64
 
-# Cython debug symbols
-cython_debug/
+##Gerando novas variáveis
+pnad22.loc[ (pnad22['raca'] == "branca") , 'raca_cor'] = 'brancos'
 
-# PyCharm
-#  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
-#  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore
-#  and can be added to the global gitignore or merged into this file.  For a more nuclear
-#  option (not recommended) you can uncomment the following to ignore the entire idea folder.
-#.idea/
+pnad22.loc[ (pnad22['raca'] == "parda") , 'raca_cor'] = 'negros'
+pnad22.loc[ (pnad22['raca'] == "preta") , 'raca_cor'] = 'negros'
+
+nad22.loc[ (pnad22['raca_cor'] == "brancos") & (pnad22['sexo'] == "Mulher"), 'sexo_raca'] = 'mulheres brancas'
+pnad22.loc[ (pnad22['raca_cor'] == "negros") & (pnad22['sexo'] == "Mulher"), 'sexo_raca'] = 'mulheres negras'
+pnad22.loc[ (pnad22['raca_cor'] == "brancos" ) & (pnad22['sexo'] == "Homem"), 'sexo_raca'] = 'homens brancos'
+pnad22.loc[ (pnad22['raca_cor'] == "negros") & (pnad22['sexo'] == "Homem"), 'sexo_raca'] = 'homens negros'
+
+pnad22.info()
+
+<class 'pandas.core.frame.DataFrame'>
+Index: 113628 entries, 0 to 376817
+Data columns (total 13 columns):
+ #   Column              Non-Null Count   Dtype  
+---  ------              --------------   -----  
+ 0   ano                 113628 non-null  int64  
+ 1   trimestre           113628 non-null  int64  
+ 2   uf                  113628 non-null  int64  
+ 3   situacao_domicilio  113628 non-null  int64  
+ 4   idade               113628 non-null  int64  
+ 5   sexo                113628 non-null  object 
+ 6   raca                113628 non-null  object 
+ 7   jornada             113628 non-null  int64  
+ 8   rendtrabprincipal   113628 non-null  float64
+ 9   condicao_ocup       113628 non-null  float64
+ 10  posicao_ocup        113628 non-null  object 
+ 11  raca_cor            112172 non-null  object 
+ 12  sexo_raca           112172 non-null  object 
+dtypes: float64(2), int64(6), object(5)
+memory usage: 12.1+ MB
+[ ]
+pnad22['sexo_raca'].value_counts()
+sexo_raca
+homens negros       36190
+mulheres negras     28550
+homens brancos      24850
+mulheres brancas    22582
+Name: count, dtype: int64
+
+## Tabelas
+pnad22.pivot_table(index = ['trimestre', 'sexo_raca'],
+                values = ['rendtrabprincipal', 'jornada'],
+                aggfunc = 'mean'
+                )
+
+pnad22.pivot_table(index = ['trimestre', 'posicao_ocup'],
+                values = ['rendtrabprincipal', 'jornada'],
+                aggfunc = 'mean'
+                )
+
+##Gráficos
+trimestre vs rendtrabprincipal
+# @title trimestre vs rendtrabprincipal
+
+from matplotlib import pyplot as plt
+import seaborn as sns
+def _plot_series(series, series_name, series_index=0):
+  palette = list(sns.palettes.mpl_palette('Dark2'))
+  xs = series['trimestre']
+  ys = series['rendtrabprincipal']
+
+  plt.plot(xs, ys, label=series_name, color=palette[series_index % len(palette)])
+
+fig, ax = plt.subplots(figsize=(10, 5.2), layout='constrained')
+df_sorted = pnad_rend_sexoraca.sort_values('trimestre', ascending=True)
+for i, (series_name, series) in enumerate(df_sorted.groupby('sexo_raca')):
+  _plot_series(series, series_name, i)
+  fig.legend(title='sexo_raca', bbox_to_anchor=(1, 1), loc='upper left')
+sns.despine(fig=fig, ax=ax)
+plt.xlabel('Trimestres 2022')
+_ = plt.ylabel('Rendimento médio do trabalho principal')
+
+trimestre vs jornada
+
+# @title trimestre vs jornada
+from matplotlib import pyplot as plt
+import seaborn as sns
+def _plot_series(series, series_name, series_index=0):
+  palette = list(sns.palettes.mpl_palette('Dark2'))
+  xs = series['trimestre']
+  ys = series['jornada']
+
+  plt.plot(xs, ys, label=series_name, color=palette[series_index % len(palette)])
+
+fig, ax = plt.subplots(figsize=(10, 5.2), layout='constrained')
+df_sorted = pnad_jornada_sexoraca.sort_values('trimestre', ascending=True)
+for i, (series_name, series) in enumerate(df_sorted.groupby('sexo_raca')):
+  _plot_series(series, series_name, i)
+  fig.legend(title='sexo_raca', bbox_to_anchor=(1, 1), loc='upper left')
+sns.despine(fig=fig, ax=ax)
+plt.xlabel('Trimestres 2022')
+_ = plt.ylabel('Jornada média de trabalho')
+
+
+
+
